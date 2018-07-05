@@ -162,30 +162,48 @@ def total_alinhado(linha):
     return None
 
 
+def fim_de_jogo(stdscr, vencedor):
+    stdscr.addstr(6, 1, "O %s venceu..." % vencedor)
+    stdscr.addstr(7, 1, "Pressione Y para jogar novamente ou Q para sair")
+    stdscr.refresh()
+
+
 def main(stdscr):
     reiniciar_tela(stdscr)
     width = stdscr.getmaxyx()[1]
     x_center = (width - 1)//2
     posicoes = [[' ', ' ', ' '], [' ', ' ', ' '], [' ', ' ', ' ']]
     pos_x, pos_y = 0, 0
+
     fim_de_partida = None
 
     while True:
         entrada = stdscr.getkey()
         if entrada == 'q':
             break
-        if entrada == 'h':
-            ajuda(stdscr)
+
         if fim_de_partida is None:
             if(entrada in ['a', 's', 'w', 'd']):
                 pos_x, pos_y = espaco_do_tabuleiro(pos_x, pos_y, entrada)
             if entrada == '\n':
                 jogou, posicoes = jogador(pos_x, pos_y, posicoes)
                 fim_de_partida = ganhador(posicoes)
-                if jogou:
+                if jogou is True and fim_de_partida is None:
                     posicoes = robo(posicoes)
+
+        if entrada == "y":
+            fim_de_partida = None
+            posicoes = [[' ', ' ', ' '], [' ', ' ', ' '], [' ', ' ', ' ']]
+            pos_x = 0
+            pos_y = 0
+
+        if entrada == 'h':
+            ajuda(stdscr)
+
         else:
             tabuleiro(stdscr, posicoes, x_center)
+            if fim_de_partida is not None:
+                fim_de_jogo(stdscr, fim_de_partida)
             cursor(stdscr, pos_x, pos_y, x_center)
 
 
